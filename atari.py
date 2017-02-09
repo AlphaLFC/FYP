@@ -63,7 +63,7 @@ class AtariPlayer(RLEnvironment):
             cv2.namedWindow(self.windowname)
         
         self.width, self.height = 416,416
-        self.actions = [0,1,2,3,4,5]
+        self.actions = [0,1,2,3,4]
         
         self.frame_skip = frame_skip
         self.nullop_start = nullop_start
@@ -78,7 +78,7 @@ class AtariPlayer(RLEnvironment):
         """
         :returns: the current 3-channel image
         """
-        return self.game.getScreenRGB()
+        return cv2.cvtColor(self.game.getScreenRGB(),cv2.COLOR_RGB2BGR)
 
     def current_state(self):
         """
