@@ -284,12 +284,12 @@ class Bullet():
                     return
 
         # check for collision with castle
-        if castle.active and self.rect.colliderect(castle.rect):
-            if self.owner == self.OWNER_PLAYER:
-                player.score -= 1000
-            #castle.destroy()
-            self.destroy()
-            return
+        #if castle.active and self.rect.colliderect(castle.rect):
+        #    if self.owner == self.OWNER_PLAYER:
+        #        player.score -= 1000
+        #    #castle.destroy()
+        #    self.destroy()
+        #    return
 
     def explode(self):
         """ start bullets's explosion """
@@ -1301,8 +1301,8 @@ class Game():
 
     def triggerBonus(self, bonus, player):
         """ Execute bonus powers """
-
-        global enemies, labels, play_sounds, sounds
+#global bonuses added here
+        global enemies, labels, play_sounds, sounds, bonuses
 
         if play_sounds:
             sounds["bonus"].play()
@@ -1400,7 +1400,7 @@ class Game():
 
         self.level.draw([self.level.TILE_EMPTY, self.level.TILE_BRICK, self.level.TILE_STEEL, self.level.TILE_FROZE, self.level.TILE_WATER])
 
-        castle.draw()
+        #castle.draw()
 
         for enemy in enemies:
             enemy.draw()
@@ -1641,8 +1641,10 @@ class Game():
                     self.superpowers = 0
                     player.score -= 1000
                     #player.lives -= 1
-                    #if player.lives > 0:
-                    self.respawnPlayer(player)
+                    if player.lives > 0:
+                        self.respawnPlayer(player)
+                    else:
+                        self.gameOver()
 
             for bullet in bullets:
                 if bullet.state == bullet.STATE_REMOVED:

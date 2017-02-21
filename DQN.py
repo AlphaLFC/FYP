@@ -147,14 +147,20 @@ class Model(ModelDesc):
                 ops.append(v.assign(tf.get_default_graph().get_tensor_by_name(new_name + ':0')))
         return tf.group(*ops, name='update_target_network')
 
-    def get_gradient_processor(self):
-        return [MapGradient(lambda grad: tf.clip_by_global_norm([grad], 5)[0][0]),
-                SummaryGradient()]
+    #def get_gradient_processor(self):
+    #    return [MapGradient(lambda grad: tf.clip_by_global_norm([grad], 5)[0][0]),
+    #            SummaryGradient()]
+
+    def _get_optimizer(self):
+        lr = symbf.get_scalar_var('learning_rate', 1e-3, summary=True)
+        opt = tf.train.AdamOptimizer(lr, epsilon=1e-3)
+        return optimizer.apply_grad_processors(
+            opt, [gradproc.GlobalNormClip(10), gradproc.SummaryGradient()])
+
 
 
 def get_config():
     logger.auto_set_dir()
-
     M = Model()
     dataset_train = ExpReplay(
         predictor_io_names=(['state'], ['Qvalue']),
