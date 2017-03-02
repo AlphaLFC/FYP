@@ -265,7 +265,7 @@ class Bullet():
         for bullet in bullets:
             if self.state == self.STATE_ACTIVE and bullet.owner != self.owner and bullet != self and self.rect.colliderect(bullet.rect):
                 if self.owner == self.OWNER_PLAYER:
-                    player.score += 10
+                    player.score += 0.1
                 self.destroy()
                 self.explode()
                 return
@@ -282,7 +282,10 @@ class Bullet():
                 if enemy.bulletImpact(self.owner == self.OWNER_ENEMY, self.damage, self.owner_class):
                     self.destroy()
                     return
-
+        
+        #if miss then reduce socore
+        player.score -= 0.001		
+					
         # check for collision with castle
         #if castle.active and self.rect.colliderect(castle.rect):
         #    if self.owner == self.OWNER_PLAYER:
@@ -429,16 +432,18 @@ class Level():
                 if tile.type == self.TILE_BRICK:
                     if play_sounds and sound:
                         sounds["brick"].play()
-                        player.score += 1
+                        player.score += 0.1
                     self.mapr.remove(tile)
                     self.updateObstacleRects()
                     return True
                 elif tile.type == self.TILE_STEEL:
                     if play_sounds and sound:
                         sounds["steel"].play()
+                        player.score -= 0.1
                     if power == 2:
                         self.mapr.remove(tile)
                         self.updateObstacleRects()
+                        player.score += 0.1
                     return True
                 else:
                     return False
@@ -780,12 +785,14 @@ class Tank():
             self.health -= damage
             if self.side == self.SIDE_ENEMY:
                 points = (self.type+1) * 100
-                tank.score += 1000
+                tank.score += 0.5
                 if self.bonus:
-                    tank.score += 1000
+                    tank.score += 0.5
             if self.health < 1:
                     #labels.append(Label(self.rect.topleft, str(points), 500))
                 self.explode()
+			    if self.side == self.SIDE_ENEMY:
+			    	tank.score += 1
             return True
 
         if self.side == self.SIDE_ENEMY:
@@ -885,8 +892,8 @@ class Enemy(Tank):
         self.timer_uuid_fire = gtimer.add(1000, lambda :self.fire())
 
         # turn on flashing
-        if self.bonus:
-            self.timer_uuid_flash = gtimer.add(200, lambda :self.toggleFlash())
+        #if self.bonus:
+        #    self.timer_uuid_flash = gtimer.add(200, lambda :self.toggleFlash())
 
     def toggleFlash(self):
         """ Toggle flash state """
@@ -915,7 +922,7 @@ class Enemy(Tank):
             return
         bonus = Bonus(self.level)
         bonuses.append(bonus)
-        gtimer.add(500, lambda :bonus.toggleVisibility())
+        #gtimer.add(500, lambda :bonus.toggleVisibility())
         gtimer.add(20000, lambda :bonuses.remove(bonus), 1)
 
 
@@ -1180,29 +1187,29 @@ class Player(Tank):
         if direction == self.DIR_UP:
             new_position = [self.rect.left, self.rect.top - self.speed]
             if new_position[1] < 0:
-                self.score -= 1
+                self.score -= 0.001
                 return
         elif direction == self.DIR_RIGHT:
             new_position = [self.rect.left + self.speed, self.rect.top]
             if new_position[0] > (416 - 26):
-                self.score -= 1
+                self.score -= 0.001
                 return
         elif direction == self.DIR_DOWN:
             new_position = [self.rect.left, self.rect.top + self.speed]
             if new_position[1] > (416 - 26):
-                self.score -= 1
+                self.score -= 0.001
                 return
         elif direction == self.DIR_LEFT:
             new_position = [self.rect.left - self.speed, self.rect.top]
             if new_position[0] < 0:
-                self.score -= 1
+                self.score -= 0.001
                 return
 
         player_rect = pygame.Rect(new_position, [26, 26])
 
         # collisions with tiles
         if player_rect.collidelist(self.level.obstacle_rects) != -1:
-            self.score -= 2
+            self.score -= 0.001
             return
 
         # collisions with enemies
@@ -1215,12 +1222,12 @@ class Player(Tank):
         # collisions with bonuses
         for bonus in bonuses:
             if player_rect.colliderect(bonus.rect) == True:
-                self.score += 2000
+                self.score += 1
                 self.bonus = bonus
         
         #if no collision, move player
         self.rect.topleft = (new_position[0], new_position[1])
-        self.score += 1
+        #self.score += 1
 
     def reset(self):
         """ reset player """
@@ -1315,10 +1322,10 @@ class Game():
         elif bonus.bonus == bonus.BONUS_SHOVEL:
             self.level.buildFortress(self.level.TILE_STEEL)
             gtimer.add(10000, lambda :self.level.buildFortress(self.level.TILE_BRICK), 1)
-        elif bonus.bonus == bonus.BONUS_STAR:
-            player.superpowers += 1
-            if player.superpowers == 2:
-                player.max_active_bullets = 2
+        #elif bonus.bonus == bonus.BONUS_STAR:
+        #    player.superpowers += 1
+        #    if player.superpowers == 2:
+        #        player.max_active_bullets = 2
         elif bonus.bonus == bonus.BONUS_TANK:
             pass
             #player.lives += 1
@@ -1601,8 +1608,9 @@ class Game():
         
         if player and player.state == player.STATE_ALIVE and not self.game_over and self.active:
             if index == 0:
-                player.score -= 0.2
-                pass
+                player.fire()
+            #    player.score -= 0.2
+            #    pass
             elif index == 1:
                 player.move(self.DIR_UP)
             elif index == 2:
@@ -1612,10 +1620,10 @@ class Game():
             elif index == 4:
                 player.move(self.DIR_LEFT)
             
-            player.fire()
+            
                 
         if self.running:
-            player.score -= 1
+            #player.score -= 1
             time_passed = self.clock.tick(50)
 
             for event in pygame.event.get():
@@ -1633,14 +1641,15 @@ class Game():
                     enemy.update(time_passed)
 
             if not self.game_over and self.active:
+                player.score -= 0.0001
                 if player.state == player.STATE_ALIVE:
                     if player.bonus != None and player.side == player.SIDE_PLAYER:
                         self.triggerBonus(player.bonus, player)
                         player.bonus = None
                 elif player.state == player.STATE_DEAD:
                     self.superpowers = 0
-                    player.score -= 1000
-                    #player.lives -= 1
+                    player.score -= 1
+                    player.lives -= 1
                     if player.lives > 0:
                         self.respawnPlayer(player)
                     else:

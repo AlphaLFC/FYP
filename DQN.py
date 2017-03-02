@@ -52,7 +52,7 @@ METHOD = None
 
 
 def get_player(viz=False, train=False):
-    pl = AtariPlayer(viz=0)
+    pl = AtariPlayer(viz=0.01)
     global NUM_ACTIONS
     NUM_ACTIONS = pl.get_action_space().num_actions()
     if not train:
@@ -214,6 +214,7 @@ if __name__ == '__main__':
     METHOD = args.algo
 
     if args.task != 'train':
+        print('!!!!!!!!!!!!resume!!!')
         cfg = PredictConfig(
             model=Model(),
             session_init=SaverRestore(args.load),

@@ -94,6 +94,7 @@ class AtariPlayer(RLEnvironment):
         ret = ret[self.height_range[0]:self.height_range[1], :].astype('float32')
         # 0.299,0.587.0.114. same as rgb2y in torch/image
         ret = cv2.cvtColor(ret, cv2.COLOR_RGB2GRAY)
+        cv2.imshow('s', ret.astype('uint8'))
         ret = cv2.resize(ret, self.image_shape)
         ret = np.expand_dims(ret, axis=2)
         return ret.astype('uint8')  # to save some memory
