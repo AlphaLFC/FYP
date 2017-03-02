@@ -2,3 +2,5 @@
 __pycache__/*
 train_log/*
 .hiscore
+tensorpack.zip
+tensorpack-master.zip
