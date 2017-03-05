@@ -63,7 +63,7 @@ class AtariPlayer(RLEnvironment):
             cv2.namedWindow(self.windowname)
         
         self.width, self.height = 416,416
-        self.actions = [0,1,2,3,4]
+        self.actions = [0,1,2,3,4,5,6,7,8]
         
         self.frame_skip = frame_skip
         self.nullop_start = nullop_start

@@ -1209,7 +1209,7 @@ class Player(Tank):
 
         # collisions with tiles
         if player_rect.collidelist(self.level.obstacle_rects) != -1:
-            self.score -= 0.002	
+            self.score -= 0.002 
             return
 
         # collisions with enemies
@@ -1619,7 +1619,18 @@ class Game():
                 player.move(self.DIR_DOWN)
             elif index == 4:
                 player.move(self.DIR_LEFT)
-            
+            elif index == 5:
+                player.fire()
+                player.move(self.DIR_UP)
+            elif index == 6:
+                player.fire()
+                player.move(self.DIR_RIGHT)
+            elif index == 7:
+                player.fire()
+                player.move(self.DIR_DOWN)
+            elif index == 8:
+                player.fire()
+                player.move(self.DIR_LEFT)
             
                 
         if self.running:
