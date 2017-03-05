@@ -284,8 +284,8 @@ class Bullet():
                     return
         
         #if miss then reduce socore
-        player.score -= 0.001		
-					
+        player.score -= 0.001       
+                    
         # check for collision with castle
         #if castle.active and self.rect.colliderect(castle.rect):
         #    if self.owner == self.OWNER_PLAYER:
@@ -791,8 +791,8 @@ class Tank():
             if self.health < 1:
                     #labels.append(Label(self.rect.topleft, str(points), 500))
                 self.explode()
-			    if self.side == self.SIDE_ENEMY:
-			    	tank.score += 1
+                if self.side == self.SIDE_ENEMY:
+                    tank.score += 0.5
             return True
 
         if self.side == self.SIDE_ENEMY:
@@ -1187,29 +1187,29 @@ class Player(Tank):
         if direction == self.DIR_UP:
             new_position = [self.rect.left, self.rect.top - self.speed]
             if new_position[1] < 0:
-                self.score -= 0.001
+                self.score -= 0.002
                 return
         elif direction == self.DIR_RIGHT:
             new_position = [self.rect.left + self.speed, self.rect.top]
             if new_position[0] > (416 - 26):
-                self.score -= 0.001
+                self.score -= 0.002
                 return
         elif direction == self.DIR_DOWN:
             new_position = [self.rect.left, self.rect.top + self.speed]
             if new_position[1] > (416 - 26):
-                self.score -= 0.001
+                self.score -= 0.002
                 return
         elif direction == self.DIR_LEFT:
             new_position = [self.rect.left - self.speed, self.rect.top]
             if new_position[0] < 0:
-                self.score -= 0.001
+                self.score -= 0.002
                 return
 
         player_rect = pygame.Rect(new_position, [26, 26])
 
         # collisions with tiles
         if player_rect.collidelist(self.level.obstacle_rects) != -1:
-            self.score -= 0.001
+            self.score -= 0.002	
             return
 
         # collisions with enemies
